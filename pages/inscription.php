@@ -1,15 +1,13 @@
 <?php
 include("traitement_inscription.php");
 ?>
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Inscription</title>
-</head>
-<body>
+
+    <style>
+        .erreur {
+             border: 1px solid red;
+        }
+    </style>
+
     <h1>Inscription</h1>
     <pre><?php //print_r($erreurs); ?></pre>
     <?php if(!empty($erreurs)): ?>
@@ -41,8 +39,8 @@ include("traitement_inscription.php");
     <!-- mettres les pages dans un répertoire pages/ -->
     <!-- faire faire login sur le même modèle -->
 
-    <form action="inscription.php" method="POST">
-
+    <form action="index.php" method="POST">
+    <input type="hidden" name="page" value="inscription">
     <label for="civilite">Civilité</label>
     <select name="civilite" id="civilite">
         <option default></option>
@@ -51,7 +49,9 @@ include("traitement_inscription.php");
     </select>
     <br>
     <label for="nom">Nom</label>
-    <input type="text" name="nom" id="nom">
+    <input class="<?= (!empty($erreurs["nom"])) ? "erreur" : "" ?>" type="text" name="nom" id="nom" value="<?= isset($nom) ? $nom : "" ?>">
+    <?= (!empty($erreurs["nom"])) ? "<span style=\"color: red;\">erreur</span>" : "" ?>
+    
     <br>
     <label for="prenom">Prénom</label>
     <input type="text" name="prenom" id="prenom">
@@ -777,5 +777,3 @@ include("traitement_inscription.php");
     <input type="submit" name="submit" value="Envoyer">
 
     </form>
-</body>
-</html>
