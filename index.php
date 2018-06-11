@@ -30,6 +30,11 @@ include("lib/connexion.php");
     case 'fiche':
       $fichier = "fiche.php";
       break;
+    case 'logout':
+      $_SESSION = [];
+      session_destroy();
+      $fichier = "accueil.php";
+      break;
     default:
       $fichier = "404.php";
       break;
@@ -68,12 +73,21 @@ include("lib/connexion.php");
             <li class="nav-item active">
               <a class="nav-link" href="index.php?page=accueil">Accueil <span class="sr-only">(current)</span></a>
             </li>
+            <?php if(!isset($_SESSION["utilisateur"])): ?>
             <li class="nav-item">
               <a class="nav-link" href="?page=inscription">Inscription</a>
             </li>
             <li class="nav-item">
               <a class="nav-link" href="index.php?page=connexion">Se connecter</a>
             </li>
+            <?php else: ?>
+            <li class="nav-item">
+              <a class="nav-link">Bonjour <?= $_SESSION["utilisateur"] ?></a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="index.php?page=logout">Se déconnecter</a>
+            </li>
+            <?php endif ?>
             <li class="nav-item">
               <a class="nav-link" href="index.php?page=catalogue">Catalogue</a>
             </li>

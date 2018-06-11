@@ -122,6 +122,12 @@ if(!empty($_POST["submit"])) {
         $erreurs["email"] = "Le champ email est obligatoire";
     }
 
+    if(!empty($login)) {
+        $login = nettoie($login);
+    } else {
+        $erreurs["login"] = "Le champ login est obligatoire";
+    }
+
     if(!empty($password)) {
         $password = nettoie($password);
     } else {
@@ -152,19 +158,15 @@ if(!empty($_POST["submit"])) {
     }
 
     if(empty($erreurs)) {
-        // les infos sont valides, on les enregisre
-        // $fichier = "$nom-$prenom.txt";
-        // $contenu = "nom=$nom" . PHP_EOL;
-        // $contenu .= "prenom=$prenom" . PHP_EOL;
-        // $contenu .= "pseudo=$pseudo" . PHP_EOL;
-        // $contenu .= "password=$password" . PHP_EOL;
-        // file_put_contents("./profils/$fichier", $contenu);
+        
         $hash = password_hash($password, PASSWORD_DEFAULT);
         
         $pdo->prepare('INSERT INTO users (login, password, email, created) VALUES (?,?,?,?)')->execute([$login, $hash, $email, date("Y-m-d")]);
+        
         $lastId = $pdo->lastInsertId();
 
         $pdo->prepare('INSERT INTO clients (nom, prenom, date_naissance, adresse, cp, ville, tel, created, user_id) VALUES (?,?,?,?,?,?,?,?,?)')->execute([$nom, $prenom, preg_replace('#(\d{2})/(\d{2})/(\d{4})\s(.*)#', '$3-$2-$1 $4', $naissance), $adresse, $cp, $ville, $tel, date("Y-m-d"), $lastId]);
+        
         header("Location: http://localhost:8888/boutique/index.php?page=connexion");
     }
 }

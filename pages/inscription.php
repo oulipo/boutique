@@ -50,7 +50,7 @@ include("traitement_inscription.php");
                 </div>
                 <div class="form-row">
                     <div class="form-group col-md-4">
-                        <input type="text" class="form-control" name="login" id="login" placeholder="Login">
+                        <input type="text" class="form-control" name="login" id="login" value="<?= (isset($login)) ? $login : "" ?>"placeholder="Login">
                     </div>
                     <div class="form-group col-md-4">
                         <input
