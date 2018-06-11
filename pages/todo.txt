@@ -1,0 +1,14 @@
+- importer un schema de base de données
+- créer les pages prévues (admin, inscription, login, etc)
+- implémenter les fonctionnalités (connexion, déconnexion, inscription, lister les catégories, etc)
+- aborder les passwords cryptés, les sessions et la gestion du format des dates : 
+- https://github.com/ircmaxell/password_compat
+avec password_hash et password_verify
+
+- sessions (panier, utilisateur connecté)  :http://php.net/manual/fr/reserved.variables.session.php
+
+exemple : 
+session_start();
+$_SESSION["panier"];
+
+- dates : voir mémo php

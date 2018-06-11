@@ -1,12 +1,5 @@
 <?php
 
-/*
-1- Récupération des données
-2- Vérification des données utilisateurs (par exemple avec : stripslashes, htmlspecialchars, trim)
-3- si les données sont valides, on applique le traitement prévu
-4- sinon on renvoie l'utilisateur à la page de formulaire en lui affichant les erreurs
-*/
-
 function nettoie($champ) {
     return htmlspecialchars(addslashes(trim($champ)));
 }
@@ -31,39 +24,30 @@ function auMoinsUnChiffre($mot) {
     return false;
 }
 
+function validateDate($date, $format = 'Y-m-d')
+{
+    $d = DateTime::createFromFormat($format, $date);
+    // The Y ( 4 digits year ) returns TRUE for any integer with any number of digits so changing the comparison from == to === fixes the issue.
+    return $d && $d->format($format) === $date;
+}
+
 $erreurs = [];
 
 if(!empty($_POST["submit"])) {
-
     // récupération des données
-    $civilite = $_POST["civilite"] ?? "";
     $nom = $_POST["nom"] ?? "";
     $prenom = $_POST["prenom"] ?? "";
     $adresse = $_POST["adresse"] ?? "";
     $cp = $_POST["cp"] ?? "";
     $ville = $_POST["ville"] ?? "";
     $naissance = $_POST["naissance"] ?? "";
-    $age = $_POST["age"] ?? "";
-    $sexe = $_POST["sexe"] ?? "";
-    $infos = $_POST["infos"] ?? "";
-    $newsletter = $_POST["newsletter"] ?? "";
     $email = $_POST["email"] ?? "";
-    $pseudo = $_POST["pseudo"] ?? "";
+    $login = $_POST["login"] ?? "";
     $password = $_POST["password"] ?? "";
     $confirmation = $_POST["confirmation"] ?? "";
     $tel = $_POST["tel"] ?? "";
-    $mob = $_POST["mob"] ?? "";
-    $categories = $_POST["categories"] ?? "";
-    $cgv = $_POST["cgv"] ?? "";
 
     // vérification des données
-    if(!empty($civilite)) {
-        $civilite = nettoie($civilite);
-        // TODO: vérifier la valeur de civilité ["M.", "Mme"]
-    } else {
-        $erreurs["civilite"] = "Le champ civilité est obligatoire";
-    }
-
     if(!empty($nom)) {
         $nom = nettoie($nom);
     } else {
@@ -80,6 +64,16 @@ if(!empty($_POST["submit"])) {
     }
     if(strlen($prenom) > 50) {
         $erreurs["prenom"][] = "Le champ prénom doit comporter 50 caractères maximum";
+    }
+
+    if(!empty($naissance)) {
+        $naissance = nettoie($naissance);
+    } else {
+        $erreurs["naissance"][] = "Le champ date de naissance est obligatoire";
+    }
+
+    if(!validateDate($naissance)) {
+        $erreurs["naissance"][] = "Le champ date de naissance n'est pas correct";
     }
 
     if(!empty($adresse)) {
@@ -113,13 +107,6 @@ if(!empty($_POST["submit"])) {
     }
     // TODO: vérifier que le champ naissance est bien une date...
     
-    $age = nettoie($age);
-    if((int)$age < 18) {
-        $erreurs["age"] = "Vous devez être majeur";
-    }
-
-    $infos = nettoie($infos);
-
     if(!empty($email)) {
         $email = nettoie($email);
     } else {
@@ -162,5 +149,22 @@ if(!empty($_POST["submit"])) {
     // 3- idem avec au moins 1 chiffre 
     if(!auMoinsUnChiffre($password)) {
         $erreurs["password"][] = "Le mot de passe doit contenir au moins un chiffre";
+    }
+
+    if(empty($erreurs)) {
+        // les infos sont valides, on les enregisre
+        // $fichier = "$nom-$prenom.txt";
+        // $contenu = "nom=$nom" . PHP_EOL;
+        // $contenu .= "prenom=$prenom" . PHP_EOL;
+        // $contenu .= "pseudo=$pseudo" . PHP_EOL;
+        // $contenu .= "password=$password" . PHP_EOL;
+        // file_put_contents("./profils/$fichier", $contenu);
+        $hash = password_hash($password, PASSWORD_DEFAULT);
+        
+        $pdo->prepare('INSERT INTO users (login, password, email, created) VALUES (?,?,?,?)')->execute([$login, $hash, $email, date("Y-m-d")]);
+        $lastId = $pdo->lastInsertId();
+
+        $pdo->prepare('INSERT INTO clients (nom, prenom, date_naissance, adresse, cp, ville, tel, created, user_id) VALUES (?,?,?,?,?,?,?,?,?)')->execute([$nom, $prenom, preg_replace('#(\d{2})/(\d{2})/(\d{4})\s(.*)#', '$3-$2-$1 $4', $naissance), $adresse, $cp, $ville, $tel, date("Y-m-d"), $lastId]);
+        header("Location: http://localhost:8888/boutique/index.php?page=connexion");
     }
 }

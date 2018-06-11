@@ -1,8 +1,15 @@
 <?php
+session_start();
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+
+include("lib/connexion.php");
+
   $page = $_REQUEST["page"] ?? "accueil";
   $fichier = "";
   switch ($page) {
-    case 'home':
+    case 'accueil':
       $fichier = "accueil.php";
       break;
     case 'faq':
@@ -11,11 +18,17 @@
     case 'inscription':
       $fichier = "inscription.php";
       break;
-    case 'login':
-      $fichier = "login.php";
+    case 'connexion':
+      $fichier = "connexion.php";
       break;
     case 'resultats':
       $fichier = "resultats.php";
+      break;
+    case 'profils':
+      $fichier = "profils.php";
+      break;
+    case 'fiche':
+      $fichier = "fiche.php";
       break;
     default:
       $fichier = "404.php";
@@ -36,6 +49,11 @@
     <!-- Bootstrap core CSS -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
     <link rel="stylesheet" href="css/carousel.css">
+    <style>
+        .erreur {
+             border: 1px solid red;
+        }
+    </style>
   </head>
   <body>
 
@@ -54,10 +72,10 @@
               <a class="nav-link" href="?page=inscription">Inscription</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="index.php?page=login">Login</a>
+              <a class="nav-link" href="index.php?page=connexion">Se connecter</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="index.php?page=faq">FAQ</a>
+              <a class="nav-link" href="index.php?page=catalogue">Catalogue</a>
             </li>
           </ul>
           <form class="form-inline mt-2 mt-md-0" action="" method="GET">
