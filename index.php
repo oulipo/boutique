@@ -6,6 +6,15 @@ error_reporting(E_ALL);
 
 include("lib/connexion.php");
 
+function totalPanier() {
+  $panier = $_SESSION["panier"] ?? [];
+  $total = 0;
+  foreach ($panier as $item) {
+    $total += $item[3];
+  }
+  return $total;
+}
+
   $page = $_REQUEST["page"] ?? "accueil";
   $fichier = "";
   switch ($page) {
@@ -30,10 +39,38 @@ include("lib/connexion.php");
     case 'fiche':
       $fichier = "fiche.php";
       break;
+    case 'catalogue':
+      $fichier = 'catalogue.php';
+      break;
     case 'logout':
       $_SESSION = [];
       session_destroy();
       $fichier = "accueil.php";
+      break;
+    case 'vider_panier':
+      if(isset($_SESSION["panier"])) {
+        $_SESSION["panier"] = [];
+      }
+      $fichier = "accueil.php";
+      break;
+    case 'ajout_panier':
+      // CODE
+      $id = $_GET["id"] ?? "";
+      $titre = $_GET["titre"] ?? "";
+      $type = $_GET["type"] ?? "";
+      $prix = $_GET["prix"] ?? "";
+      if(!isset($_SESSION["panier"])) {
+        $_SESSION["panier"] = [];
+        if(!empty($id)) {
+          $_SESSION["panier"][] = [$id, $titre, $type, $prix];
+        // array_push($_SESSION["panier"], [1, "Test", "Chanson", 0.99]);
+        } 
+      } else {
+        if(!empty($id)) {
+          $_SESSION["panier"][] = [$id, $titre, $type, $prix];
+        } 
+      }
+      $fichier = 'catalogue.php';
       break;
     default:
       $fichier = "404.php";
@@ -105,7 +142,16 @@ include("lib/connexion.php");
 
       <!-- ici, on réalise l'include... -->
       <?php include("pages/$fichier"); ?>
-
+      <pre>
+      <?php 
+      if(isset($_SESSION["panier"]) && !empty($_SESSION["panier"])) {
+        print_r($_SESSION["panier"]);
+        echo "TOTAL = " . totalPanier();
+      } else {
+        echo "Panier vide...";
+      }
+        ?>
+      </pre>
       <!-- FOOTER -->
       <footer class="container">
         <p class="float-right"><a href="#">Back to top</a></p>
