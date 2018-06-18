@@ -42,6 +42,12 @@ function totalPanier() {
     case 'catalogue':
       $fichier = 'catalogue.php';
       break;
+    case 'blog':
+      $fichier = 'blog.php';
+      break;
+    case 'post':
+      $fichier = 'post.php';
+      break;
     case 'logout':
       $_SESSION = [];
       session_destroy();
@@ -127,6 +133,9 @@ function totalPanier() {
             <?php endif ?>
             <li class="nav-item">
               <a class="nav-link" href="index.php?page=catalogue">Catalogue</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="index.php?page=blog">Blog</a>
             </li>
           </ul>
           <form class="form-inline mt-2 mt-md-0" action="" method="GET">
